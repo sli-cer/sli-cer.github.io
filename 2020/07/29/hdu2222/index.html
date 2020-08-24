@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>hdu2222 | slicer的技术交流栈</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="hdu2222 Keywords Search题目链接：http:&#x2F;&#x2F;acm.hdu.edu.cn&#x2F;showproblem.php?pid&#x3D;2222 题目类型：AC自动机、trie树">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hdu2222">
+<meta property="og:url" content="http://sli-cer.github.io/2020/07/29/hdu2222/index.html">
+<meta property="og:site_name" content="slicer的技术交流栈">
+<meta property="og:description" content="hdu2222 Keywords Search题目链接：http:&#x2F;&#x2F;acm.hdu.edu.cn&#x2F;showproblem.php?pid&#x3D;2222 题目类型：AC自动机、trie树">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-07-29T12:20:51.000Z">
+<meta property="article:modified_time" content="2020-08-24T04:46:41.953Z">
+<meta property="article:author" content="slicer">
+<meta property="article:tag" content="高级数据结构">
+<meta property="article:tag" content="trie树">
+<meta property="article:tag" content="algorithm">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="slicer的技术交流栈" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.1.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">slicer的技术交流栈</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://sli-cer.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-hdu2222" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/07/29/hdu2222/" class="article-date">
+  <time datetime="2020-07-29T12:20:51.000Z" itemprop="datePublished">2020-07-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      hdu2222
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="hdu2222-Keywords-Search"><a href="#hdu2222-Keywords-Search" class="headerlink" title="hdu2222 Keywords Search"></a>hdu2222 Keywords Search</h2><p>题目链接：<a target="_blank" rel="noopener" href="http://acm.hdu.edu.cn/showproblem.php?pid=2222">http://acm.hdu.edu.cn/showproblem.php?pid=2222</a></p>
+<p>题目类型：AC自动机、trie树</p>
+<a id="more"></a>
+
+<p>题目描述：输入一堆模式串，再输入一个主串，看主串里能匹配多少模式串。</p>
+<p>题目分析：市面上几乎所有题解都说这个是AC自动机，也有比较少用的trie树，所以这题就是从trie树迈向AC自动机的绝佳跳板了。一开始用trie，一直TLE，参考题解，得知TLE可能是因为没释放上一个case的trie树的内存，释放了内存，还是TLE……这就比较bug了。具体优化过程后面会详细讲。</p>
+<p>trie树 优化思路：</p>
+<ol>
+<li><p>概述</p>
+<p>这题可以用trie树，主干结构还是那样，这里实现起来比较无脑，但一直TLE，说明这不是一道水题，除java外限制1000ms，我最终优化版本的程序也是在850ms左右，所以这题（用trie树解法）是卡时的，下面是解决TLE过程中使用的各种方法，附带比较说明和学习心得。</p>
+</li>
+<li><p>释放上一样例的内存</p>
+<p>做这题我第一次实际感受到程序运行中空间和时间的关系这么紧密，释放空间竟然会节省大量时间，其实只要学过操作系统，这里就豁然开朗了，在存储空间紧张的情况下，程序只能在夹缝中寻找剩余的空间，甚至饿死。所以这里需要在每次输出结果后，释放掉本次的所有模式串构建的trie树节点，供下个样例使用，这里简单讨论c/c++的内存分配及回收机制，有两套办法</p>
+<ul>
+<li>malloc/free</li>
+</ul>
+<p>malloc和free是c/c++标准库里的一套分配/回收内存的函数，使用这两个函数需要引入stdlib.h这个头文件。例如有一个结构体叫node，里面有什么无所谓直接使用(node*)malloc(sizeof(node));这一句，可以得到一个已分配好内存的node指针，前面直接用一个结构体指针变量接下来就行，放函数里也行，其它数据类型类推，给数组分配内存就是在sizeof()后面乘上数组规模。free就简单多了，比如有个指针叫p，要释放掉这个指针指向的空间，一句free(p);即可，注意这里仅释放了p指向的那片空间，p这个指针变量并没有被消灭，它变成了野指针，指向的是非法空间，所以一般在后面再写一句p=NULL;避免误用，访问了非法内存。</p>
+<ul>
+<li>new/delete</li>
+</ul>
+<p>new和delete是c++的操作符，就是说纯c里没法用这两个东西，其使用不需要引入什么头文件。如有一个结构体叫node，那么new node();就返回了一个已分配好内存的node指针。delete就简单多了，比如有个指针叫p，delete p;就完事。</p>
+<ul>
+<li>比较<ul>
+<li>两套方法，其作用都是动态分配/释放内存。</li>
+<li>malloc仅分配内存，并返回void指针，需要强制类型转换才能接下来，并且需要赋初值才能避免一些错误，new不仅分配内存，还给调用构造函数，赋了初值，返回对应类型的指针，不必类型转换；</li>
+<li>free仅释放内存，delete除了释放内存，还会在释放内存前调用析构函数，清理掉成员，避免不必要的错误。</li>
+<li>free和delete都没有消灭指针，所以在使用这两种方法释放内存之后，都要处理一下野指针问题。</li>
+<li>malloc/free管理内存失败会返回0，new/delete等的方式管理内存失败会抛出异常。</li>
+<li>官方建议两套方法成套使用，不要混用</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>用结构体指针代替程序里结构体实例的用法</p>
+<p>指针比实例快，<a target="_blank" rel="noopener" href="https://blog.csdn.net/zengzisuzi/article/details/92067470">https://blog.csdn.net/zengzisuzi/article/details/92067470</a>   这篇文章里给了一个例子，我就是改了这里才A的(TAT)，其实也很好理解，指针是什么？就是一个地址串，在32位程序里，一个指针的长度统一是4字节，用指针来处理，走向下个节点时的赋值操作，处理的就是这4字节；而如果用结构体实例，哪怕比较简单的，里面也应该有两个指针域，指向其它节点，这就8个字节了，再来一个数据域，想想还是用指针划算吧。</p>
+</li>
+<li><p>其它</p>
+<p>还有些细枝末节的地方，不能确定是否对运行效率有影响，这个OJ的实时运行情况不可复现，前后两次提交相同的代码，运行时间是有可能不一样的。</p>
+</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="comment">//hdu2222 Keywords Search</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">node</span>&#123;</span></span><br><span class="line">    node*children[<span class="number">26</span>];</span><br><span class="line">    <span class="keyword">int</span> tail;</span><br><span class="line">&#125;*root;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">create_trie</span><span class="params">(<span class="keyword">char</span>*str)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    node *p=root,*q;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="built_in">strlen</span>(str);i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> id=str[i]-<span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">        <span class="keyword">if</span>(p-&gt;children[id]==<span class="literal">NULL</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            p-&gt;children[id]=<span class="keyword">new</span> node();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(i==<span class="built_in">strlen</span>(str)<span class="number">-1</span>)&#123;</span><br><span class="line">            p-&gt;children[id]-&gt;tail++;</span><br><span class="line">        &#125;</span><br><span class="line">        p=p-&gt;children[id];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">search_trie</span><span class="params">(<span class="keyword">char</span>*str)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> ans=<span class="number">0</span>,flag=<span class="number">0</span>,j;</span><br><span class="line">    <span class="keyword">int</span> l=<span class="built_in">strlen</span>(str);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;l;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        node*p=root;</span><br><span class="line">        flag=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(j=i;j&lt;l;j++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> id=str[j]-<span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">            <span class="keyword">if</span>(p-&gt;children[id]!=<span class="literal">NULL</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">//printf(&quot;yes %c\n&quot;,str[j]);</span></span><br><span class="line">                <span class="keyword">if</span>(p-&gt;children[id]-&gt;tail)</span><br><span class="line">                &#123;</span><br><span class="line">                    ans+=p-&gt;children[id]-&gt;tail;</span><br><span class="line">                    p-&gt;children[id]-&gt;tail=<span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                p=p-&gt;children[id];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">//printf(&quot;no %c\n&quot;,str[j]);</span></span><br><span class="line">                <span class="comment">//flag=1;</span></span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//if(!flag)i=j;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">freetrie</span><span class="params">(node *p)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">26</span>;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(p-&gt;children[i]!=<span class="literal">NULL</span>)</span><br><span class="line">            freetrie(p-&gt;children[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//printf(&quot;%c\n&quot;,p-&gt;data);</span></span><br><span class="line">    <span class="keyword">delete</span> p;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">char</span> input[<span class="number">66</span>],desc[<span class="number">1000007</span>];</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//printf(&quot;%d\n&quot;,sizeof(root.children));</span></span><br><span class="line">    <span class="comment">/*create_trie(&quot;banana&quot;);</span></span><br><span class="line"><span class="comment">    create_trie(&quot;band&quot;);</span></span><br><span class="line"><span class="comment">    //printf(&quot;!\n&quot;);</span></span><br><span class="line"><span class="comment">    //preorder_traversal(0);</span></span><br><span class="line"><span class="comment">    printf(&quot;%s\n&quot;,search_trie(&quot;band&quot;)?&quot;yes&quot;:&quot;no&quot;);*/</span></span><br><span class="line">    <span class="keyword">int</span> t,n;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;t);</span><br><span class="line">    <span class="keyword">while</span>(t--)</span><br><span class="line">    &#123;</span><br><span class="line">        root=<span class="keyword">new</span> node();</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;n);</span><br><span class="line">        <span class="keyword">while</span>(n--)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>,input);</span><br><span class="line">            create_trie(input);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>,desc);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,search_trie(desc));</span><br><span class="line">        freetrie(root);<span class="comment">//之前没释放内存超时了。。</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>PS：本来还想做一个数组实现的trie树，结果一直TLE……放弃了</p>
+<p>PPS：AC自动机留在另外一篇。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sli-cer.github.io/2020/07/29/hdu2222/" data-id="cke80vum30006ukty7hi7du4m" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/algorithm/" rel="tag">algorithm</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/trie%E6%A0%91/" rel="tag">trie树</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%AB%98%E7%BA%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">高级数据结构</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/08/14/hdu2222-AC%E8%87%AA%E5%8A%A8%E6%9C%BA/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          hdu2222-AC自动机
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/07/28/hdu1247/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">hdu1247</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AC%E8%87%AA%E5%8A%A8%E6%9C%BA/" rel="tag">AC自动机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/STL-map/" rel="tag">STL-map</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/algorithm/" rel="tag">algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dp/" rel="tag">dp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/" rel="tag">github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/manacher/" rel="tag">manacher</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/test-article/" rel="tag">test article</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/trie%E6%A0%91/" rel="tag">trie树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%A0%E4%BD%95/" rel="tag">几何</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9B%9E%E6%96%87/" rel="tag">回文</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2/" rel="tag">字符串</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D/" rel="tag">字符串匹配</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" rel="tag">搭建博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E8%AE%BA/" rel="tag">数论</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%A0%A1%E6%8B%9B%E7%AC%94%E8%AF%95/" rel="tag">校招笔试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%A8%A1%E6%8B%9F/" rel="tag">模拟</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/" rel="tag">测试文章</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E5%A4%8D%E6%9D%82%E5%BA%A6/" rel="tag">算法复杂度</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BA%BF%E6%AE%B5%E6%A0%91/" rel="tag">线段树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E6%98%93/" rel="tag">网易</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B4%AA%E5%BF%83/" rel="tag">贪心</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag">转载</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%AB%98%E7%BA%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">高级数据结构</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/AC%E8%87%AA%E5%8A%A8%E6%9C%BA/" style="font-size: 10px;">AC自动机</a> <a href="/tags/STL-map/" style="font-size: 10px;">STL-map</a> <a href="/tags/algorithm/" style="font-size: 20px;">algorithm</a> <a href="/tags/dp/" style="font-size: 10px;">dp</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/manacher/" style="font-size: 10px;">manacher</a> <a href="/tags/test-article/" style="font-size: 10px;">test article</a> <a href="/tags/trie%E6%A0%91/" style="font-size: 14px;">trie树</a> <a href="/tags/%E5%87%A0%E4%BD%95/" style="font-size: 10px;">几何</a> <a href="/tags/%E5%9B%9E%E6%96%87/" style="font-size: 10px;">回文</a> <a href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2/" style="font-size: 10px;">字符串</a> <a href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D/" style="font-size: 10px;">字符串匹配</a> <a href="/tags/%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" style="font-size: 10px;">搭建博客</a> <a href="/tags/%E6%95%B0%E8%AE%BA/" style="font-size: 12px;">数论</a> <a href="/tags/%E6%A0%A1%E6%8B%9B%E7%AC%94%E8%AF%95/" style="font-size: 18px;">校招笔试</a> <a href="/tags/%E6%A8%A1%E6%8B%9F/" style="font-size: 18px;">模拟</a> <a href="/tags/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/" style="font-size: 10px;">测试文章</a> <a href="/tags/%E7%AE%97%E6%B3%95%E5%A4%8D%E6%9D%82%E5%BA%A6/" style="font-size: 10px;">算法复杂度</a> <a href="/tags/%E7%BA%BF%E6%AE%B5%E6%A0%91/" style="font-size: 10px;">线段树</a> <a href="/tags/%E7%BD%91%E6%98%93/" style="font-size: 18px;">网易</a> <a href="/tags/%E8%B4%AA%E5%BF%83/" style="font-size: 14px;">贪心</a> <a href="/tags/%E8%BD%AC%E8%BD%BD/" style="font-size: 10px;">转载</a> <a href="/tags/%E9%AB%98%E7%BA%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 16px;">高级数据结构</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/08/24/Hexo-Github%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">Hexo+Github搭建个人博客</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/23/%E4%B8%80%E7%AF%87test-blog%E8%AF%95%E8%AF%95%E6%B0%B4/">一篇test blog试试水</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/23/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/22/hdu1166/">hdu1166</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/21/nowcoder-WY50-%E7%9F%A9%E5%BD%A2%E9%87%8D%E5%8F%A0/">nowcoder-WY50-矩形重叠</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 slicer<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>hdu2222-AC自动机 | slicer的技术交流栈</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="AC自动机入门(以hdu2222为例)前置知识点：  trie树 失配指针概念（参考KMP的next数组）  题目链接：http:&#x2F;&#x2F;acm.hdu.edu.cn&#x2F;showproblem.php?pid&#x3D;2222">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hdu2222-AC自动机">
+<meta property="og:url" content="http://sli-cer.github.io/2020/08/14/hdu2222-AC%E8%87%AA%E5%8A%A8%E6%9C%BA/index.html">
+<meta property="og:site_name" content="slicer的技术交流栈">
+<meta property="og:description" content="AC自动机入门(以hdu2222为例)前置知识点：  trie树 失配指针概念（参考KMP的next数组）  题目链接：http:&#x2F;&#x2F;acm.hdu.edu.cn&#x2F;showproblem.php?pid&#x3D;2222">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://sli-cer.github.io/2020/08/14/hdu2222-AC%E8%87%AA%E5%8A%A8%E6%9C%BA/0.jpg">
+<meta property="og:image" content="http://sli-cer.github.io/2020/08/14/hdu2222-AC%E8%87%AA%E5%8A%A8%E6%9C%BA/1.jpg">
+<meta property="og:image" content="http://sli-cer.github.io/2020/08/14/hdu2222-AC%E8%87%AA%E5%8A%A8%E6%9C%BA/2.jpg">
+<meta property="article:published_time" content="2020-08-14T12:24:53.000Z">
+<meta property="article:modified_time" content="2020-08-24T04:47:00.438Z">
+<meta property="article:author" content="slicer">
+<meta property="article:tag" content="algorithm">
+<meta property="article:tag" content="字符串匹配">
+<meta property="article:tag" content="AC自动机">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://sli-cer.github.io/2020/08/14/hdu2222-AC%E8%87%AA%E5%8A%A8%E6%9C%BA/0.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="slicer的技术交流栈" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.1.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">slicer的技术交流栈</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://sli-cer.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-hdu2222-AC自动机" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/08/14/hdu2222-AC%E8%87%AA%E5%8A%A8%E6%9C%BA/" class="article-date">
+  <time datetime="2020-08-14T12:24:53.000Z" itemprop="datePublished">2020-08-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      hdu2222-AC自动机
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="AC自动机入门-以hdu2222为例"><a href="#AC自动机入门-以hdu2222为例" class="headerlink" title="AC自动机入门(以hdu2222为例)"></a>AC自动机入门(以hdu2222为例)</h2><p>前置知识点：</p>
+<ol>
+<li>trie树</li>
+<li>失配指针概念（参考KMP的next数组）</li>
+</ol>
+<p>题目链接：<a target="_blank" rel="noopener" href="http://acm.hdu.edu.cn/showproblem.php?pid=2222">http://acm.hdu.edu.cn/showproblem.php?pid=2222</a></p>
+<a id="more"></a>
+
+<p>AC自动机简析：</p>
+<p>AC自动机其实就是增强版trie树，其作用一样是字符串多模式匹配，与trie树相比，增强之处就是多了一个fail数组，或者叫失配指针域，提供类似KMP的功能，在失配的时候无需从头开始匹配，而是回到可能的最近点处直接匹配下一字符，这使得trie树的效率大大提高。下面以hdu2222为例，使用AC自动机解决此题。</p>
+<p><img src="/2020/08/14/hdu2222-AC%E8%87%AA%E5%8A%A8%E6%9C%BA/0.jpg"></p>
+<p>第一步建树，和trie树一样，建出trie树如上图，其中蓝色边框的是单词结束节点。</p>
+<p><img src="/2020/08/14/hdu2222-AC%E8%87%AA%E5%8A%A8%E6%9C%BA/1.jpg"></p>
+<p>然后开始用BFS算法层序遍历trie树，先将根节点的直接子节点的fail域赋值指向根节点，如上图。</p>
+<p><img src="/2020/08/14/hdu2222-AC%E8%87%AA%E5%8A%A8%E6%9C%BA/2.jpg"></p>
+<p>遍历时，处理队列中每个节点的所有子节点，若某节点p的某子节点存在，则将此子节点的fail域设为p节点的fail域对应的子节点(有点绕，看图+代码肯定能明白)。若p节点不存在此子节点，那么此子节点域也不能指向NULL，而是要指向p节点的fail域所对应的此子节点。AC自动机全部建完如上图，其中黑色虚线是fail指针，红色字的节点是不存在的子节点域；为了方便看图，除第一层外，指向根节点的fail指针都没有画出(用虚线箭头就没了QAQ，但是肯定都是从下层指向上层的)。</p>
+<p>AC自动机大概就是这样，下面上题目的AC代码</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="comment">//hdu2222 Keywords Search</span></span><br><span class="line"><span class="keyword">int</span> node[<span class="number">240000</span>][<span class="number">26</span>],trie_end,tail[<span class="number">240000</span>],fail[<span class="number">240000</span>];</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">create_trie</span><span class="params">(<span class="keyword">char</span>*str)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> p=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="built_in">strlen</span>(str);i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> id=str[i]-<span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">        <span class="keyword">if</span>(node[p][id]==<span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            node[p][id]=trie_end++;</span><br><span class="line">            <span class="built_in">memset</span>(node[node[p][id]],<span class="number">0</span>,<span class="keyword">sizeof</span>(<span class="keyword">int</span>)*<span class="number">26</span>);</span><br><span class="line">            tail[node[p][id]]=<span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(i==<span class="built_in">strlen</span>(str)<span class="number">-1</span>)&#123;</span><br><span class="line">            tail[node[p][id]]++;</span><br><span class="line">        &#125;</span><br><span class="line">        p=node[p][id];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">put_fail</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">queue</span>&lt;<span class="keyword">int</span>&gt;q;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">26</span>;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(node[<span class="number">0</span>][i])</span><br><span class="line">        &#123;</span><br><span class="line">            fail[node[<span class="number">0</span>][i]]=<span class="number">0</span>;</span><br><span class="line">            q.push(node[<span class="number">0</span>][i]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span>(!q.empty())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> now=q.front();</span><br><span class="line">        q.pop();</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">26</span>;i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(node[now][i])</span><br><span class="line">            &#123;</span><br><span class="line">                fail[node[now][i]]=node[fail[now]][i];</span><br><span class="line">                q.push(node[now][i]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> node[now][i]=node[fail[now]][i];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">search_trie</span><span class="params">(<span class="keyword">char</span>*str)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> ans=<span class="number">0</span>,j,p=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> l=<span class="built_in">strlen</span>(str);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;l;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        p=node[p][str[i]-<span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">        <span class="keyword">for</span>(j=p;j&amp;&amp;tail[j]!=<span class="number">-1</span>;j=fail[j])</span><br><span class="line">        &#123;</span><br><span class="line">            ans+=tail[j];</span><br><span class="line">            tail[j]=<span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">freetrie</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(node,<span class="number">0</span>,<span class="keyword">sizeof</span>(<span class="keyword">int</span>)*<span class="number">26</span>*trie_end);</span><br><span class="line">    <span class="built_in">memset</span>(tail,<span class="number">0</span>,<span class="keyword">sizeof</span>(<span class="keyword">int</span>)*trie_end);</span><br><span class="line">    <span class="built_in">memset</span>(fail,<span class="number">0</span>,<span class="keyword">sizeof</span>(<span class="keyword">int</span>)*trie_end);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">char</span> input[<span class="number">66</span>],desc[<span class="number">1000007</span>];</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> t,n;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;t);</span><br><span class="line">    <span class="keyword">while</span>(t--)</span><br><span class="line">    &#123;</span><br><span class="line">        trie_end=<span class="number">1</span>;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;n);</span><br><span class="line">        <span class="keyword">while</span>(n--)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>,input);</span><br><span class="line">            create_trie(input);</span><br><span class="line">        &#125;</span><br><span class="line">        put_fail();</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>,desc);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,search_trie(desc));</span><br><span class="line">        freetrie();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面是数组法实现的，照例再来个链接法的，等状态完全回来就不这么麻烦了。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="comment">//hdu2222 Keywords Search</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">node</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    node* children[<span class="number">26</span>];</span><br><span class="line">    node* fail;</span><br><span class="line">    <span class="keyword">int</span> tail;</span><br><span class="line">&#125;root;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">create_trie</span><span class="params">(<span class="keyword">char</span>*str)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    node*p=&amp;root;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="built_in">strlen</span>(str);i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> id=str[i]-<span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">        <span class="keyword">if</span>(p-&gt;children[id]==<span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            p-&gt;children[id]=<span class="keyword">new</span> node();</span><br><span class="line">            p-&gt;children[id]-&gt;tail=<span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(i==<span class="built_in">strlen</span>(str)<span class="number">-1</span>)&#123;</span><br><span class="line">            p-&gt;children[id]-&gt;tail++;</span><br><span class="line">        &#125;</span><br><span class="line">        p=p-&gt;children[id];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">put_fail</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">queue</span>&lt;node*&gt;q;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">26</span>;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(root.children[i])</span><br><span class="line">        &#123;</span><br><span class="line">            root.children[i]-&gt;fail=&amp;root;</span><br><span class="line">            q.push(root.children[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> root.children[i]=&amp;root;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span>(!q.empty())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//printf(&quot;%d\n&quot;,q.size());</span></span><br><span class="line">        node*p=q.front();</span><br><span class="line">        q.pop();</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">26</span>;i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(p-&gt;children[i])</span><br><span class="line">            &#123;</span><br><span class="line">                p-&gt;children[i]-&gt;fail=p-&gt;fail-&gt;children[i];</span><br><span class="line">                q.push(p-&gt;children[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> p-&gt;children[i]=p-&gt;fail-&gt;children[i];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">search_trie</span><span class="params">(<span class="keyword">char</span>*str)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> ans=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> l=<span class="built_in">strlen</span>(str);</span><br><span class="line">    node* p=&amp;root;</span><br><span class="line">    node*j;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;l;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        p=p-&gt;children[str[i]-<span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">        <span class="keyword">for</span>(j=p;j!=&amp;root&amp;&amp;j-&gt;tail!=<span class="number">-1</span>;j=j-&gt;fail)</span><br><span class="line">        &#123;</span><br><span class="line">            ans+=j-&gt;tail;</span><br><span class="line">            j-&gt;tail=<span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">char</span> input[<span class="number">66</span>],desc[<span class="number">1000007</span>];</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> t,n;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;t);</span><br><span class="line">    <span class="keyword">while</span>(t--)</span><br><span class="line">    &#123;</span><br><span class="line">        root=*(<span class="keyword">new</span> node());</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;n);</span><br><span class="line">        <span class="keyword">while</span>(n--)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>,input);</span><br><span class="line">            create_trie(input);</span><br><span class="line">        &#125;</span><br><span class="line">        put_fail();</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>,desc);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,search_trie(desc));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>PS：我参考的是 <a target="_blank" rel="noopener" href="https://bestsort.cn/2019/04/28/402/">https://bestsort.cn/2019/04/28/402/</a> 这一篇，它的算法介绍里“如果不存在这个子节点我们就让他指向根节点”这句说错了，图也跟着错了，应该是指向其父节点的fail指针指向的节点的对应子节点，但是它代码里也有注释，代码和注释是对的。</p>
+<p>PPS：链接法本来也想像上篇一样搞个内存回收，但trie树做了put_fail()之后不止是设置了fail域，还把所有的子节点域都设置了，这样trie树就变成了一张很乱的存在很多环的图，回收这样的图内存可能需要多考虑一下方案，目前没有成功。</p>
+<p>PPPS：这题用AC自动机的平均时间大概在200到300ms，比trie+优化的800到900ms好多了，效率完全体现出来了。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sli-cer.github.io/2020/08/14/hdu2222-AC%E8%87%AA%E5%8A%A8%E6%9C%BA/" data-id="cke80vulx0000uktyd1oq7a5u" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AC%E8%87%AA%E5%8A%A8%E6%9C%BA/" rel="tag">AC自动机</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/algorithm/" rel="tag">algorithm</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D/" rel="tag">字符串匹配</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/08/15/hdu1075/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          hdu1075
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/07/29/hdu2222/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">hdu2222</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AC%E8%87%AA%E5%8A%A8%E6%9C%BA/" rel="tag">AC自动机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/STL-map/" rel="tag">STL-map</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/algorithm/" rel="tag">algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dp/" rel="tag">dp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/" rel="tag">github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/manacher/" rel="tag">manacher</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/test-article/" rel="tag">test article</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/trie%E6%A0%91/" rel="tag">trie树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%A0%E4%BD%95/" rel="tag">几何</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9B%9E%E6%96%87/" rel="tag">回文</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2/" rel="tag">字符串</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D/" rel="tag">字符串匹配</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" rel="tag">搭建博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E8%AE%BA/" rel="tag">数论</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%A0%A1%E6%8B%9B%E7%AC%94%E8%AF%95/" rel="tag">校招笔试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%A8%A1%E6%8B%9F/" rel="tag">模拟</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/" rel="tag">测试文章</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E5%A4%8D%E6%9D%82%E5%BA%A6/" rel="tag">算法复杂度</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BA%BF%E6%AE%B5%E6%A0%91/" rel="tag">线段树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E6%98%93/" rel="tag">网易</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B4%AA%E5%BF%83/" rel="tag">贪心</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag">转载</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%AB%98%E7%BA%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">高级数据结构</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/AC%E8%87%AA%E5%8A%A8%E6%9C%BA/" style="font-size: 10px;">AC自动机</a> <a href="/tags/STL-map/" style="font-size: 10px;">STL-map</a> <a href="/tags/algorithm/" style="font-size: 20px;">algorithm</a> <a href="/tags/dp/" style="font-size: 10px;">dp</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/manacher/" style="font-size: 10px;">manacher</a> <a href="/tags/test-article/" style="font-size: 10px;">test article</a> <a href="/tags/trie%E6%A0%91/" style="font-size: 14px;">trie树</a> <a href="/tags/%E5%87%A0%E4%BD%95/" style="font-size: 10px;">几何</a> <a href="/tags/%E5%9B%9E%E6%96%87/" style="font-size: 10px;">回文</a> <a href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2/" style="font-size: 10px;">字符串</a> <a href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D/" style="font-size: 10px;">字符串匹配</a> <a href="/tags/%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" style="font-size: 10px;">搭建博客</a> <a href="/tags/%E6%95%B0%E8%AE%BA/" style="font-size: 12px;">数论</a> <a href="/tags/%E6%A0%A1%E6%8B%9B%E7%AC%94%E8%AF%95/" style="font-size: 18px;">校招笔试</a> <a href="/tags/%E6%A8%A1%E6%8B%9F/" style="font-size: 18px;">模拟</a> <a href="/tags/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/" style="font-size: 10px;">测试文章</a> <a href="/tags/%E7%AE%97%E6%B3%95%E5%A4%8D%E6%9D%82%E5%BA%A6/" style="font-size: 10px;">算法复杂度</a> <a href="/tags/%E7%BA%BF%E6%AE%B5%E6%A0%91/" style="font-size: 10px;">线段树</a> <a href="/tags/%E7%BD%91%E6%98%93/" style="font-size: 18px;">网易</a> <a href="/tags/%E8%B4%AA%E5%BF%83/" style="font-size: 14px;">贪心</a> <a href="/tags/%E8%BD%AC%E8%BD%BD/" style="font-size: 10px;">转载</a> <a href="/tags/%E9%AB%98%E7%BA%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 16px;">高级数据结构</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/08/24/Hexo-Github%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">Hexo+Github搭建个人博客</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/23/%E4%B8%80%E7%AF%87test-blog%E8%AF%95%E8%AF%95%E6%B0%B4/">一篇test blog试试水</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/23/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/22/hdu1166/">hdu1166</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/21/nowcoder-WY50-%E7%9F%A9%E5%BD%A2%E9%87%8D%E5%8F%A0/">nowcoder-WY50-矩形重叠</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 slicer<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

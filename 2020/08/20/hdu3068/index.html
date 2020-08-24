@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>hdu3068 | slicer的技术交流栈</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="hdu3068 最长回文题目链接：http:&#x2F;&#x2F;acm.hdu.edu.cn&#x2F;showproblem.php?pid&#x3D;3068 题目类型：字符串，回文，manacher">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hdu3068">
+<meta property="og:url" content="http://sli-cer.github.io/2020/08/20/hdu3068/index.html">
+<meta property="og:site_name" content="slicer的技术交流栈">
+<meta property="og:description" content="hdu3068 最长回文题目链接：http:&#x2F;&#x2F;acm.hdu.edu.cn&#x2F;showproblem.php?pid&#x3D;3068 题目类型：字符串，回文，manacher">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://sli-cer.github.io/2020/08/20/hdu3068/20180403_02.png">
+<meta property="article:published_time" content="2020-08-20T12:56:06.000Z">
+<meta property="article:modified_time" content="2020-08-24T04:58:54.076Z">
+<meta property="article:author" content="slicer">
+<meta property="article:tag" content="algorithm">
+<meta property="article:tag" content="字符串">
+<meta property="article:tag" content="回文">
+<meta property="article:tag" content="manacher">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://sli-cer.github.io/2020/08/20/hdu3068/20180403_02.png">
+  
+    <link rel="alternate" href="/atom.xml" title="slicer的技术交流栈" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.1.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">slicer的技术交流栈</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://sli-cer.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-hdu3068" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/08/20/hdu3068/" class="article-date">
+  <time datetime="2020-08-20T12:56:06.000Z" itemprop="datePublished">2020-08-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      hdu3068
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="hdu3068-最长回文"><a href="#hdu3068-最长回文" class="headerlink" title="hdu3068 最长回文"></a>hdu3068 最长回文</h2><p>题目链接：<a target="_blank" rel="noopener" href="http://acm.hdu.edu.cn/showproblem.php?pid=3068">http://acm.hdu.edu.cn/showproblem.php?pid=3068</a></p>
+<p>题目类型：字符串，回文，manacher</p>
+<a id="more"></a>
+
+<p>题目大意：找最长回文子串</p>
+<p>manacher算法：</p>
+<p>概述：这个算法是用来找一个字符串里最长回文子串的，如果使用暴力的方法来找，那么肯定是双for循环，把每个点当中点，再向两边遍历，复杂度O(n*n)。manacher虽然也要把每个点当中点遍历一遍，但每次无需从0半径开始扫描，而是把以一个点为中心的回文串长度与其它点的联系起来，做一个运算得到起始搜索长度，使得其复杂度骤降为O(n)</p>
+<table>
+<thead>
+<tr>
+<th>i</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+<th>16</th>
+<th>17</th>
+<th>18</th>
+<th>19</th>
+<th>20</th>
+<th>21</th>
+<th>22</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>s_new[i]</td>
+<td>$</td>
+<td>#</td>
+<td>a</td>
+<td>#</td>
+<td>b</td>
+<td>#</td>
+<td>b</td>
+<td>#</td>
+<td>a</td>
+<td>#</td>
+<td>h</td>
+<td>#</td>
+<td>o</td>
+<td>#</td>
+<td>p</td>
+<td>#</td>
+<td>x</td>
+<td>#</td>
+<td>p</td>
+<td>#</td>
+<td>o</td>
+<td>#</td>
+<td>^</td>
+</tr>
+<tr>
+<td>p[i]</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>1</td>
+<td>2</td>
+<td>5</td>
+<td>2</td>
+<td>1</td>
+<td>2</td>
+<td>1</td>
+<td>2</td>
+<td>1</td>
+<td>2</td>
+<td>1</td>
+<td>2</td>
+<td>1</td>
+<td>6</td>
+<td>1</td>
+<td>2</td>
+<td>1</td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<p>步骤（大致分为“预处理；循环：{运算；搜索；}”）：</p>
+<ol>
+<li><p>预处理：回文分奇回文（如abcba）和偶回文（如abba）两种，考虑两种情况会特别麻烦，这里manacher算法会先把字符串做一个预处理，即在每两个字符中间和字符串头尾都加上一个字符串中不曾出现过的字符当分隔符，如’#’，这样所有的回文都只可能是奇回文了。还要做一下边界处理，左边加另一个没出现过的字符，右边因为有串结束符’\0’，所以不用管。</p>
+<p>这里以s=”abbahopxpo”为例，预处理后变为s_new=”$#a#b#b#a#h#o#p#x#p#o#^”，其中^代表’\0’，s  里起初有一个偶回文 abba 和一个奇回文 opxpo，被转换为 #a#b#b#a# 和 #o#p#x#p#o#，长度都转换成了奇数。</p>
+<p>定义一个辅助数组 int p[]，其中 p[i] 表示以 i 为中心的最长回文的半径</p>
+<p>可以看出，p[i] - 1 正好是<strong>原字符串</strong>中最长回文串的长度。下面就是最重要的步骤，运算和搜索。</p>
+</li>
+<li><p>运算：</p>
+<p>设置两个变量，mx 和 id 。mx 代表以 id 为中心的最长回文的右边界，也就是 mx = id + p[id]。假设我们现在求 p[i]，也就是以 i 为中心的最长回文半径，如果 i &lt; mx，如下图，那么：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">if (i &lt; mx)  </span><br><span class="line">  p[i] &#x3D; min(p[2 * id - i], mx - i);</span><br></pre></td></tr></table></figure>
+
+<p>2 * id - i 为 i 关于 id 的对称点，即上图的 j 点，而 p[j]表示以 j 为中心的最长回文半径，因此我们可以利用 p[j] 来加快查找。</p>
+<p><img src="/2020/08/20/hdu3068/20180403_02.png"></p>
+</li>
+<li><p>搜索：</p>
+<p>也可以叫查找或遍历，本质就是从中心向外扩展寻找回文边界的操作，是算法基本操作的一部分。</p>
+</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">char</span> s[<span class="number">110002</span>];</span><br><span class="line"><span class="keyword">char</span> s_new[<span class="number">210002</span>];<span class="comment">//存添加字符后的字符串 </span></span><br><span class="line"><span class="keyword">int</span> p[<span class="number">210002</span>];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Init</span><span class="params">()</span> </span>&#123;<span class="comment">//形成新的字符串 </span></span><br><span class="line">    <span class="keyword">int</span> len=<span class="built_in">strlen</span>(s);<span class="comment">//len是输入字符串的长度</span></span><br><span class="line">    s_new[<span class="number">0</span>]=<span class="string">&#x27;$&#x27;</span>;<span class="comment">//处理边界，防止越界 </span></span><br><span class="line">    s_new[<span class="number">1</span>]=<span class="string">&#x27;#&#x27;</span>;</span><br><span class="line">    <span class="keyword">int</span> j=<span class="number">2</span>; </span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;len;i++) &#123;</span><br><span class="line">        s_new[j++]=s[i];</span><br><span class="line">        s_new[j++]=<span class="string">&#x27;#&#x27;</span>;</span><br><span class="line">    &#125; </span><br><span class="line">    s_new[j]=<span class="string">&#x27;\0&#x27;</span>;<span class="comment">//处理边界，防止越界（容易忘记） </span></span><br><span class="line">    <span class="keyword">return</span> j;<span class="comment">// 返回s_new的长度 </span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Manacher</span><span class="params">()</span> </span>&#123;<span class="comment">//返回最长回文串 </span></span><br><span class="line">    <span class="keyword">int</span> len=Init();<span class="comment">//取得新字符串的长度， 完成向s_new的转换</span></span><br><span class="line">    <span class="keyword">int</span> max_len=<span class="number">-1</span>;<span class="comment">//最长回文长度</span></span><br><span class="line">    <span class="keyword">int</span> id;</span><br><span class="line">    <span class="keyword">int</span> mx=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=len;i++) &#123;</span><br><span class="line">        <span class="keyword">if</span>(i&lt;mx)</span><br><span class="line">            p[i]=<span class="built_in">min</span>(p[<span class="number">2</span>*id-i],mx-i);<span class="comment">//上面图片就是这里的讲解 </span></span><br><span class="line">        <span class="keyword">else</span> p[i]=<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span>(s_new[i-p[i]]==s_new[i+p[i]])<span class="comment">//不需边界判断，因为左有&#x27;$&#x27;，右有&#x27;\0&#x27;标记；</span></span><br><span class="line">            p[i]++;<span class="comment">//mx对此回文中点的贡献已经结束，现在是正常寻找扩大半径</span></span><br><span class="line">        <span class="keyword">if</span>(mx&lt;i+p[i]) &#123;<span class="comment">//每走移动一个回文中点，都要和mx比较，使mx是最大，提高p[i]=min(p[2*id-i],mx-i)效率 </span></span><br><span class="line">            id=i;<span class="comment">//更新id </span></span><br><span class="line">            mx=i+p[i];<span class="comment">//更新mx </span></span><br><span class="line">        &#125;</span><br><span class="line">        max_len=<span class="built_in">max</span>(max_len,p[i]<span class="number">-1</span>); </span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">return</span> max_len; </span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>,&amp;s)!=EOF)</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,Manacher());</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>PS：模板算法，复制进来稍微一改直接A，算法本身还是比较有意思的。参考的 <a target="_blank" rel="noopener" href="https://ethsonliu.com/2018/04/manacher.html">https://ethsonliu.com/2018/04/manacher.html</a> 这篇，里面还有复杂度分析。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sli-cer.github.io/2020/08/20/hdu3068/" data-id="cke826crr0003kktyf6g7bbss" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/algorithm/" rel="tag">algorithm</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/manacher/" rel="tag">manacher</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%9B%9E%E6%96%87/" rel="tag">回文</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2/" rel="tag">字符串</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/08/21/nowcoder-WY49-%E6%95%B0%E5%AF%B9/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          nowcoder-WY49-数对
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/08/19/nowcoder-WY48-%E8%BF%B7%E8%B7%AF%E7%9A%84%E7%89%9B%E7%89%9B/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">nowcoder-WY48-迷路的牛牛</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AC%E8%87%AA%E5%8A%A8%E6%9C%BA/" rel="tag">AC自动机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/STL-map/" rel="tag">STL-map</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/algorithm/" rel="tag">algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dp/" rel="tag">dp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/" rel="tag">github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/manacher/" rel="tag">manacher</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/test-article/" rel="tag">test article</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/trie%E6%A0%91/" rel="tag">trie树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%A0%E4%BD%95/" rel="tag">几何</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9B%9E%E6%96%87/" rel="tag">回文</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2/" rel="tag">字符串</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D/" rel="tag">字符串匹配</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" rel="tag">搭建博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E8%AE%BA/" rel="tag">数论</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%A0%A1%E6%8B%9B%E7%AC%94%E8%AF%95/" rel="tag">校招笔试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%A8%A1%E6%8B%9F/" rel="tag">模拟</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/" rel="tag">测试文章</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E5%A4%8D%E6%9D%82%E5%BA%A6/" rel="tag">算法复杂度</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BA%BF%E6%AE%B5%E6%A0%91/" rel="tag">线段树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E6%98%93/" rel="tag">网易</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B4%AA%E5%BF%83/" rel="tag">贪心</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag">转载</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%AB%98%E7%BA%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">高级数据结构</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/AC%E8%87%AA%E5%8A%A8%E6%9C%BA/" style="font-size: 10px;">AC自动机</a> <a href="/tags/STL-map/" style="font-size: 10px;">STL-map</a> <a href="/tags/algorithm/" style="font-size: 20px;">algorithm</a> <a href="/tags/dp/" style="font-size: 10px;">dp</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/manacher/" style="font-size: 10px;">manacher</a> <a href="/tags/test-article/" style="font-size: 10px;">test article</a> <a href="/tags/trie%E6%A0%91/" style="font-size: 14px;">trie树</a> <a href="/tags/%E5%87%A0%E4%BD%95/" style="font-size: 10px;">几何</a> <a href="/tags/%E5%9B%9E%E6%96%87/" style="font-size: 10px;">回文</a> <a href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2/" style="font-size: 10px;">字符串</a> <a href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D/" style="font-size: 10px;">字符串匹配</a> <a href="/tags/%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" style="font-size: 10px;">搭建博客</a> <a href="/tags/%E6%95%B0%E8%AE%BA/" style="font-size: 12px;">数论</a> <a href="/tags/%E6%A0%A1%E6%8B%9B%E7%AC%94%E8%AF%95/" style="font-size: 18px;">校招笔试</a> <a href="/tags/%E6%A8%A1%E6%8B%9F/" style="font-size: 18px;">模拟</a> <a href="/tags/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/" style="font-size: 10px;">测试文章</a> <a href="/tags/%E7%AE%97%E6%B3%95%E5%A4%8D%E6%9D%82%E5%BA%A6/" style="font-size: 10px;">算法复杂度</a> <a href="/tags/%E7%BA%BF%E6%AE%B5%E6%A0%91/" style="font-size: 10px;">线段树</a> <a href="/tags/%E7%BD%91%E6%98%93/" style="font-size: 18px;">网易</a> <a href="/tags/%E8%B4%AA%E5%BF%83/" style="font-size: 14px;">贪心</a> <a href="/tags/%E8%BD%AC%E8%BD%BD/" style="font-size: 10px;">转载</a> <a href="/tags/%E9%AB%98%E7%BA%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 16px;">高级数据结构</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/08/24/Hexo-Github%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">Hexo+Github搭建个人博客</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/23/%E4%B8%80%E7%AF%87test-blog%E8%AF%95%E8%AF%95%E6%B0%B4/">一篇test blog试试水</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/23/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/22/hdu1166/">hdu1166</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/21/nowcoder-WY50-%E7%9F%A9%E5%BD%A2%E9%87%8D%E5%8F%A0/">nowcoder-WY50-矩形重叠</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 slicer<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
